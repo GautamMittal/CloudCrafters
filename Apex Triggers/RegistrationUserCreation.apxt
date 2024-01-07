@@ -1,0 +1,35 @@
+trigger RegistrationUserCreation on User_Registration__c (after insert) {
+        List <User> newUsers = new List<User>();
+        
+         Profile pf= [Select Id from profile where Name='Chatter Free User'];
+        
+         for(User_Registration__c c : Trigger.NEW){
+          string username = c.Last_Name__c +c.First_Name__c+ c.Name +'@chattercloud.com';
+             User userInsert= new User() ;
+        
+                    userInsert.FirstName = c.First_Name__c;
+                    userInsert.LastName =c.Last_Name__c;
+                    userInsert.Email=c.Email__c;
+                    userInsert.Username = username;
+                    userInsert.ProfileId = pf.Id;
+                    userInsert.Alias=c.Name;
+                    userInsert.EmailEncodingKey='UTF-8';
+                    userInsert.TimeZoneSidKey='GMT';
+                    userInsert.LocaleSidKey = 'en_US';
+                    userInsert.LanguageLocaleKey='en_US';
+        			userInsert.City=c.City__c;
+                    userInsert.State=c.State__c;
+             		userInsert.Country=c.Country__c;
+            		userInsert.Postalcode=c.Pin_Code__c;
+             		userInsert.ReceivesInfoEmails=true;
+             		
+            newUsers.add(userInsert);
+        
+                    } 
+        
+        if(newUsers.size()>0) 
+        
+        Insert newUsers;
+    System.resetpassword(newUsers[0].Id,true);
+    	
+}
